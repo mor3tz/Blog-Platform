@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  role      Role      @default(USER)
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
+  createdAt DateTime  @default(now())
+}
+
+model Post {
+  id         String     @id @default(uuid())
+  title      String
+  slug       String     @unique
+  content    String
+  status     PostStatus @default(DRAFT)
+  authorId   String
+  author     User       @relation(fields: [authorId], references: [id])
+  categoryId String?
+  category   Category?  @relation(fields: [categoryId], references: [id])
+  tags       PostTag[]
+  comments   Comment[]
+  likes      Like[]
+  bookmarks  Bookmark[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([slug, status])
+  @@index([authorId])
+}
+
+model Comment {
+  id      String @id @default(uuid())
+  content String
+  postId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([postId])
+  @@index([userId])
+}
+
+model Like {
+  id String @id @default(uuid())
+  userId String
+  postId String
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+  post Post @relation(fields: [postId],references: [id],onDelete: Cascade)
+
+  @@unique([userId,postId])
+}
+
+model Bookmark {
+  id String @id @default(uuid())
+  userId String
+  postId String
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+  post Post @relation(fields: [postId],references: [id],onDelete: Cascade)
+
+  @@unique([userId,postId])
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  posts     Post[]
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  name  String @unique
+  slug  String @unique
+  posts PostTag[]
+  createdAt DateTime @default(now())
+}
+
+model PostTag {
+  postId  String
+  tagId   String
+
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
