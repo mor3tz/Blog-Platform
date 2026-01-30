@@ -1,9 +1,11 @@
+〽️ Blogging Platform API
+
 📌 Deskripsi
 
 Blogging Platform API adalah RESTful API berbasis Node.js (Express) untuk mengelola sistem blog modern: autentikasi, posting artikel, komentar, kategori, tag, like, dan bookmark.
 API ini dirancang clean, scalable, dan production-ready.
 
-🧱 Tech Stack
+⚙️ Tech Stack
 
 Node.js
 
