@@ -1,4 +1,4 @@
-〽️ Blogging Platform API
+〽️ **Blogging Platform API**
 
 📌 Deskripsi
 
